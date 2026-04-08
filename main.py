@@ -1,5 +1,5 @@
 import csv
-import streamlit as st
+
 
 class Player:
     def __init__(self, name, bid):
@@ -60,7 +60,7 @@ class Bid_tree:
         return [current.name, current.bid]
 
     def delete(self, bid, node):         
-         
+
         if node is None:
             return None
         if bid < node.bid:
