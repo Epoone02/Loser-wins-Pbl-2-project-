@@ -38,3 +38,22 @@ class Bid_tree:
                     break
                 else:
                     current = current.left
+def build_tree(self, liste):
+    for item in liste:
+        self.insert(item[0], item[1])
+
+def minBST(self):
+    if self.root is None:
+        return None
+    current = self.root
+    while current.left is not None:
+        current = current.left
+    return [current.name, current.bid]
+
+def maxBST(self):
+    if self.root is None:
+        return None
+    current = self.root
+    while current.right is not None:
+        current = current.right
+    return [current.name, current.bid]
