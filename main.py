@@ -1,60 +1,40 @@
-class Arbre:
+import csv
+import streamlit as st
 
-  def __init__(self, e, f1, f2):
-    self.donnee = e
-    self.filsG = f1
-    self.filsD = f2
+class Player:
+    def __init__(self, name, bid):
+        self.name = name
+        self.bid = int(bid)
+        self.right = None
+        self.left = None
 
-  def insert(self, valeur):
-    a = self
-    continuer = True
-    while continuer:
-      if valeur < a.donnee:
-        if a.filsG is None:
-          a.filsG = Arbre(valeur, None, None)
-          continuer = False
-        else:
-          a = a.filsG
-      else:
-        if a.filsD is None:
-          a.filsD = Arbre(valeur, None, None)
-          continuer = False
-        else:
-          a = a.filsD
+    def is_leaf(self):
+        return self.right is None and self.left is None
 
 
-def insertion(arbre, val):
-  arbre = arbre
-  continuer = True
-  while continuer:
-    if val < arbre.donnee:
-      if arbre.filsG is None:
-        arbre.filsG = Arbre(val, None, None)
-        continuer = False
-      else:
-        arbre = arbre.filsG
-    else:
-      if arbre.filsD is None:
-        arbre.filsD = Arbre(val, None, None)
-        continuer = False
-      else:
-        arbre = arbre.filsD
+class Bid_tree:
+    def __init__(self):
+        self.root = None
 
-
-def genereABR(liste):
-  arbre = Arbre(liste[0], None, None)
-  for valeur in liste[1:]:
-    insertion(arbre, valeur)
-  return arbre
-
-def parcoursI(arbre):
-  if arbre is None:
-    return []
-  else:
-    return parcoursI(arbre.filsG) + [arbre.donnee] + parcoursI(arbre.filsD)
-  
-def minABR(arbre):
-  a = arbre
-  while a.filsG is not None:
-    a = a.filsG
-  return a.donnee
+    def insert(self, name, bid):
+        bid = int(bid)
+        if self.root is None:
+            self.root = Player(name, bid)
+            return
+        current = self.root
+        while True:
+            if bid == current.bid:
+                self.root = self.delete(current.bid, self.root)                           
+                return
+            elif bid > current.bid:
+                if current.right is None:
+                    current.right = Player(name, bid)
+                    break
+                else:
+                    current = current.right
+            else:
+                if current.left is None:
+                    current.left = Player(name, bid)
+                    break
+                else:
+                    current = current.left
