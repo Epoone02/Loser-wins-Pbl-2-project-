@@ -38,7 +38,6 @@ class Bid_tree:
                     break
                 else:
                     current = current.left
-<<<<<<< HEAD
 
     def build_tree(self, liste):
         for item in liste:
@@ -60,29 +59,8 @@ class Bid_tree:
             current = current.right
         return [current.name, current.bid]
 
-    def delete(self, bid, node):          
-=======
-def build_tree(self, liste):
-    for item in liste:
-        self.insert(item[0], item[1])
-
-def minBST(self):
-    if self.root is None:
-        return None
-    current = self.root
-    while current.left is not None:
-        current = current.left
-    return [current.name, current.bid]
-
-def maxBST(self):
-    if self.root is None:
-        return None
-    current = self.root
-    while current.right is not None:
-        current = current.right
-    return [current.name, current.bid]
-def delete(self, bid, node):          
->>>>>>> e362ee132b8b39ca6203c5513407623f1bef981f
+    def delete(self, bid, node):         
+         
         if node is None:
             return None
         if bid < node.bid:
@@ -98,12 +76,8 @@ def delete(self, bid, node):
                 name, bid2, node.left = self.suppmax(node.left)
                 node.name, node.bid = name, bid2
         return node
-<<<<<<< HEAD
 
     def suppmax(self, node):
-=======
-def suppmax(self, node):
->>>>>>> e362ee132b8b39ca6203c5513407623f1bef981f
         if node.right is None:
             return node.name, node.bid, node.left
         name, bid, node.right = self.suppmax(node.right)
@@ -119,7 +93,6 @@ def load_bid(file):
             if len(row) >= 2:
                 bid_list.append(row)
     return bid_list
-<<<<<<< HEAD
 
 
 bid = load_bid('Loser-wins-Pbl-2-project-/APP_lowbid_data/lowbid_stress_200k.csv')
@@ -128,10 +101,3 @@ tree1.build_tree(bid)
 
 
 
-=======
-
-
-bid = load_bid('Loser-wins-Pbl-2-project-/APP_lowbid_data/lowbid_stress_200k.csv')
-tree1 = Bid_tree()
-tree1.build_tree(bid)
->>>>>>> e362ee132b8b39ca6203c5513407623f1bef981f
