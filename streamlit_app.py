@@ -4,9 +4,9 @@ st.title('Welcome to Abracadabra')
 st.write('description')
 
 if st.button('Start Bidding!'):
-    st.switch_page('Loser-wins-Pbl-2-project-/pages/PlayerVSPlayer.py')
+    st.switch_page('pages/PlayerVSPlayer.py')
 
 if st.button('See Stats'):
-    st.switch_page('Loser-wins-Pbl-2-project-/pages/Chart.py')
+    st.switch_page('pages/Chart.py')
 
 

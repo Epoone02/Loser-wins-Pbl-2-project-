@@ -66,7 +66,7 @@ def load_bid(file):
     return bid_list
 
 
-bid = load_bid('Loser-wins-Pbl-2-project-/APP_lowbid_data/lowbid_stress_200k.csv')
+bid = load_bid('APP_lowbid_data\lowbid_stress_200k.csv')
 tree1 = Bid_tree()
 tree1.build_tree(bid)
 
