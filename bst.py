@@ -46,15 +46,15 @@ class Bid_tree:
             self.insert(item[0], item[1]) # insert all bids into the tree
 
 
-    def _in_order_recursive(self, node, nodes_list):
+    def in_order_recursive(self, node, nodes_list):
         if node is not None:
-            self._in_order_recursive(node.left, nodes_list)
+            self.in_order_recursive(node.left, nodes_list)
             nodes_list.append(node)
-            self._in_order_recursive(node.right, nodes_list)
+            self.in_order_recursive(node.right, nodes_list)
 
     def get_inorder_nodes(self):
         nodes = []
-        self._in_order_recursive(self.root, nodes)
+        self.in_order_recursive(self.root, nodes)
         return nodes # return nodes sorted by price
 
 
@@ -102,13 +102,13 @@ class Bid_tree:
                 current = current.left
         return result
 
-    def _delete_recursive(self, node, bid):
+    def delete_recursive(self, node, bid):
         if node is None:
             return None
         if bid < node.bid:
-            node.left = self._delete_recursive(node.left, bid)
+            node.left = self.delete_recursive(node.left, bid)
         elif bid > node.bid:
-            node.right = self._delete_recursive(node.right, bid)
+            node.right = self.delete_recursive(node.right, bid)
         else:
             if node.left is None:
                 return node.right
@@ -155,13 +155,13 @@ class Bid_tree:
         return total_cost / total_bids if total_bids > 0 else 0.0 # average cost per player
 
 
-    def _depth_recursive(self, node): # compute tree height
+    def depth_recursive(self, node): # compute tree height
         if node is None:
             return 0
-        return 1 + max(self._depth_recursive(node.left), self._depth_recursive(node.right))
+        return 1 + max(self.depth_recursive(node.left), self.depth_recursive(node.right))
 
     def depth(self):
-        return self._depth_recursive(self.root)
+        return self.depth_recursive(self.root)
 
     def is_degenerate(self): # check if tree is like a linked list (bad case)
         n = len(self.get_inorder_nodes())
