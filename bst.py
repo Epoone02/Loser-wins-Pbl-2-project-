@@ -15,35 +15,35 @@ Player = BidNode
 
 class Bid_tree:
     def __init__(self):
-        self.root = None
+        self.root = None # root of the tree
 
 
     def insert(self, name, bid):
         bid = int(bid)
         if self.root is None:
-            self.root = BidNode(name, bid)
+            self.root = BidNode(name, bid) # create root node
             return
         current = self.root
         while True:
             if bid == current.bid:
-                current.names.append(name)
+                current.names.append(name) # same bid → add player
                 return
             elif bid > current.bid:
                 if current.right is None:
-                    current.right = BidNode(name, bid)
+                    current.right = BidNode(name, bid) # go right
                     break
                 else:
                     current = current.right
             else:
                 if current.left is None:
-                    current.left = BidNode(name, bid)
+                    current.left = BidNode(name, bid) # go left
                     break
                 else:
                     current = current.left
 
     def build_tree(self, liste):
         for item in liste:
-            self.insert(item[0], item[1])
+            self.insert(item[0], item[1]) # insert all bids into the tree
 
 
     def _in_order_recursive(self, node, nodes_list):
@@ -55,13 +55,13 @@ class Bid_tree:
     def get_inorder_nodes(self):
         nodes = []
         self._in_order_recursive(self.root, nodes)
-        return nodes
+        return nodes # return nodes sorted by price
 
 
     def find_winner(self):
         for node in self.get_inorder_nodes():
             if len(node.names) == 1:
-                return node
+                return node # first unique price = winner
         return None
 
 
@@ -70,7 +70,7 @@ class Bid_tree:
         current = self.root
         while current is not None:
             if bid == current.bid:
-                return current
+                return current # found
             elif bid > current.bid:
                 current = current.right
             else:
@@ -78,7 +78,7 @@ class Bid_tree:
         return None
 
 
-    def successor(self, bid):
+    def successor(self, bid): # find next higher price
         bid = int(bid)
         result = None
         current = self.root
@@ -90,7 +90,7 @@ class Bid_tree:
                 current = current.right
         return result
 
-    def predecessor(self, bid):
+    def predecessor(self, bid): # find next lower price
         bid = int(bid)
         result = None
         current = self.root
@@ -132,7 +132,7 @@ class Bid_tree:
 
 
 
-    def total_bids(self):
+    def total_bids(self): # count all bids
         return sum(len(node.names) for node in self.get_inorder_nodes())
 
     def price_distribution(self):
@@ -143,7 +143,7 @@ class Bid_tree:
         for node in self.get_inorder_nodes():
             cost = base_cost + alpha / (node.bid + 1)
             total += cost * len(node.names)
-        return total
+        return total # compute total money earned
 
     def average_cost_per_player(self, base_cost=1.0, alpha=49.0):
         total_cost = 0.0
@@ -152,10 +152,10 @@ class Bid_tree:
             cost = base_cost + alpha / (node.bid + 1)
             total_cost += cost * len(node.names)
             total_bids += len(node.names)
-        return total_cost / total_bids if total_bids > 0 else 0.0
+        return total_cost / total_bids if total_bids > 0 else 0.0 # average cost per player
 
 
-    def _depth_recursive(self, node):
+    def _depth_recursive(self, node): # compute tree height
         if node is None:
             return 0
         return 1 + max(self._depth_recursive(node.left), self._depth_recursive(node.right))
@@ -163,6 +163,6 @@ class Bid_tree:
     def depth(self):
         return self._depth_recursive(self.root)
 
-    def is_degenerate(self):
+    def is_degenerate(self): # check if tree is like a linked list (bad case)
         n = len(self.get_inorder_nodes())
         return n > 0 and self.depth() == n
