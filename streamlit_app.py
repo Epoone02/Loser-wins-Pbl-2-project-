@@ -10,6 +10,7 @@ st.markdown("""
 - Every player places a **bid** (integer ≥ 0).
 - The **winner** is the player with the **lowest price that no one else chose**.
 - The **host** can add bot players and resolve the round at any time.
+            
 NOW lets start bidding! (its not real money so its okay )
 """)
 
