@@ -15,7 +15,11 @@ def get_global_memory():
         "alpha": 49.0
     }
 
+def get_wins():
+    return []
+
 memory = get_global_memory()
+wins = get_wins()
 
 st.sidebar.title(" Game Settings")
 current_view = st.sidebar.radio("Switch View:", ["Player View", " Host View"])
@@ -41,11 +45,7 @@ if current_view == "Player View":
             
             if max_bid > 0:
                 proposed_price = st.slider("Select your Bid Price", min_value=0, max_value=max_bid, value=0, step=1)
-            else:
-                proposed_price = 0
-                st.warning("Your balance is too low to bid higher than 0.")
             
-            # Risk premium calculation
             bid_cost = base_cost + (alpha / (proposed_price + 1))
             st.write(f" **Cost of this ticket:** ${bid_cost:.2f}")
             
@@ -104,6 +104,7 @@ elif current_view == " Host View":
             
             st.subheader(" Final Result")
             if winner:
+                wins.append(node.bid)
                 st.balloons()
                 st.write(f"The winner is **{winner['player']}** with the unique price of **{winner['price']}**! ")
             else:
