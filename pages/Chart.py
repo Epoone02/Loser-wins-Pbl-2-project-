@@ -7,7 +7,7 @@ import altair as alt
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from bst import Bid_tree
 from simulation import run_simulation
-from utils import load_bid, compute_bid_cost
+from loader import load_bid, compute_bid_cost
 
 @st.cache_data(show_spinner=False)
 def cached_simulation(num_rounds, num_players, max_price, base_cost, alpha):
