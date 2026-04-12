@@ -45,16 +45,6 @@ if current_view == "👤 Player View":
         st.info(f"💰 **Current Balance:** ${current_balance:.2f}")
 
         if current_balance > 0:
-<<<<<<< HEAD
-            max_bid = int(current_balance)
-            
-            if max_bid > 0:
-                proposed_price = st.slider("Select your Bid Price", min_value=0, max_value=max_bid, value=0, step=1)
-            
-            bid_cost = base_cost + (alpha / (proposed_price + 1))
-            st.write(f" **Cost of this ticket:** ${bid_cost:.2f}")
-            
-=======
             max_bid = min(int(current_balance), max_price)
             proposed_price = st.slider(
                 "Select your Bid Price",
@@ -79,7 +69,6 @@ if current_view == "👤 Player View":
                     hints.append(f"⬆️ Closest higher bid already placed: **{succ.bid}**")
                 st.caption(" | ".join(hints))
 
->>>>>>> 2ddfc4c5965dfe097f2ca7874b61e5b285c16184
             if bid_cost > current_balance:
                 st.error("❌ You don't have enough money to pay the ticket cost!")
             else:
