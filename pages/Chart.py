@@ -57,9 +57,9 @@ st.divider()
 st.subheader("📂 Single-Round Analysis (from CSV)")
 
 csv_files = {
-    "Demo (30 bids)":         os.path.join("data", "lowbid_manche_demo.csv"),
-    "Multi-round 500×40":     os.path.join("data", "lowbid_multi_manches_500x40.csv"),
-    "Stress test 200 k bids": os.path.join("data", "lowbid_stress_200k.csv"),
+    "Demo (30 bids)":         os.path.join("Loser-wins-Pbl-2-project-/APP_lowbid_data", "lowbid_manche_demo.csv"),
+    "Multi-round 500×40":     os.path.join("Loser-wins-Pbl-2-project-/APP_lowbid_data", "lowbid_multi_manches_500x40.csv"),
+    "Stress test 200 k bids": os.path.join("Loser-wins-Pbl-2-project-/APP_lowbid_data", "lowbid_stress_200k.csv"),
 }
 selected_csv = st.selectbox("Choose a dataset", list(csv_files.keys()))
 csv_path = csv_files[selected_csv]
@@ -80,7 +80,6 @@ if os.path.exists(csv_path):
     else:
         st.warning("No winner — every price was proposed by more than one player.")
 
-    # Price distribution chart
     dist = tree.price_distribution()
     dist_df = pd.DataFrame({"Price": list(dist.keys()), "Count": list(dist.values())})
     dist_chart = alt.Chart(dist_df).mark_bar().encode(
@@ -88,8 +87,8 @@ if os.path.exists(csv_path):
         y=alt.Y("Count:Q",  title="Number of Players"),
         color=alt.condition(
             alt.datum.Count == 1,
-            alt.value("#22c55e"),   # green = unique
-            alt.value("#ef4444")    # red   = duplicate
+            alt.value("#22c55e"),   
+            alt.value("#ef4444")    
         ),
         tooltip=["Price", "Count"]
     ).properties(title="Price Distribution (green = unique, red = duplicate)", height=280)
