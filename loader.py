@@ -6,12 +6,12 @@ def load_bid(file):
     bid_list = []
     if not os.path.exists(file):
         print(f"[WARNING] File not found: {file}")
-        return bid_list
+        return bid_list # file not found
     with open(file, 'r') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader, None)
         if header is None:
-            return bid_list
+            return bid_list 
 
         # Detect column layout from header names
         header_lower = [h.strip().lower() for h in header]
@@ -31,8 +31,8 @@ def load_bid(file):
                     bid_list.append((row[idx_player], row[idx_price]))
                 except ValueError:
                     pass
-    return bid_list
+    return bid_list # load bids from CSV file
 
 
 def compute_bid_cost(price, base_cost=1.0, alpha=49.0):
-    return base_cost + alpha / (price + 1)
+    return base_cost + alpha / (price + 1) # cost formula (risk premium)
