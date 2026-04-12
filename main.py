@@ -1,74 +1,44 @@
-import csv
+"""
+main.py — CLI entry point for LowBid.
+
+Run:  python main.py
+"""
+import os
+
+from bst import Bid_tree
+from loader import load_bid
+from simulation import run_simulation
 
 
-class Player:
-    def __init__(self, name, bid):
-        self.names = [name]
-        self.bid = int(bid)
-        self.right = None
-        self.left = None
+if __name__ == "__main__":
+    data_file = os.path.join('data', 'lowbid_manche_demo.csv')
+    bids = load_bid(data_file)
 
-    def is_leaf(self):
-        return self.right is None and self.left is None
+    if bids:
+        tree = Bid_tree()
+        tree.build_tree(bids)
 
+        print("=== In-order traversal ===")
+        for node in tree.get_inorder_nodes():
+            status = "UNIQUE" if len(node.names) == 1 else "DUPLICATE"
+            print(f"  {node.bid}: {node.names} -> {status}")
 
-class Bid_tree:
-    def __init__(self):
-        self.root = None
+        print(f"\nTree depth    : {tree.depth()} {'(DEGENERATE)' if tree.is_degenerate() else ''}")
 
-    def insert(self, name, bid):
-        bid = int(bid)
-        if self.root is None:
-            self.root = Player(name, bid)
-            return
-        current = self.root
-        while True:
-            if bid == current.bid:
-                current.names.append(name)                       
-                return
-            elif bid > current.bid:
-                if current.right is None:
-                    current.right = Player(name, bid)
-                    break
-                else:
-                    current = current.right
-            else:
-                if current.left is None:
-                    current.left = Player(name, bid)
-                    break
-                else:
-                    current = current.left
+        winner = tree.find_winner()
+        if winner:
+            print(f"Winner        : {winner.names[0]} with price {winner.bid}")
+        else:
+            print("No winner this round.")
 
-    def build_tree(self, liste):
-        for item in liste:
-            self.insert(item[0], item[1])
+        print(f"\nTotal bids    : {tree.total_bids()}")
+        print(f"Seller revenue: ${tree.seller_revenue():.2f}")
+        print(f"Avg cost/bid  : ${tree.average_cost_per_player():.2f}")
 
-    def _in_order_recursive(self, node, nodes_list):
-        if node is not None:
-            self._in_order_recursive(node.left, nodes_list)
-            nodes_list.append(node)
-            self._in_order_recursive(node.right, nodes_list)
-
-    def get_inorder_nodes(self):
-        nodes = []
-        self._in_order_recursive(self.root, nodes)
-        return nodes
-
-
-def load_bid(file):
-    bid_list = []
-    with open(file, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        next(reader, None)
-        for row in reader:
-            if len(row) >= 2:
-                bid_list.append(row)
-    return bid_list
-
-
-bid = load_bid('APP_lowbid_data\lowbid_stress_200k.csv')
-tree1 = Bid_tree()
-tree1.build_tree(bid)
-
-
-
+    print("\n=== Simulation (500 rounds) ===")
+    results = run_simulation(num_rounds=500, num_players=20, max_price=50)
+    for strategy, r in results.items():
+        print(f"\n[{strategy}]")
+        print(f"  Win rate          : {r['win_rate']:.1%}")
+        print(f"  Avg winning price : {r['avg_winning_price']:.2f}")
+        print(f"  Avg seller revenue: ${r['avg_seller_revenue']:.2f}")

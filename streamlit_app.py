@@ -1,12 +1,27 @@
 import streamlit as st
 
-st.title('Welcome to Abracadabra')
-st.write('description')
+st.set_page_config(page_title="Abracadabra - LowBid", page_icon="🔨", layout="centered")
 
-if st.button('Start Bidding!'):
-    st.switch_page('pages/PlayerVSPlayer.py')
+st.title("Welcome to Winabid")
+st.subheader("The Lowest Unique Bid Wins!")
 
-if st.button('See Stats'):
-    st.switch_page('pages/Chart.py')
+st.markdown("""
+### How it works
+- Every player places a **bid** (integer ≥ 0).
+- The **winner** is the player with the **lowest price that no one else chose**.
+- The **host** can add bot players and resolve the round at any time.
+""")
+
+st.divider()
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Start Bidding!", use_container_width=True):
+        st.switch_page("pages/PlayerVSPlayer.py")
+
+with col2:
+    if st.button("See Stats & Simulation", use_container_width=True):
+        st.switch_page("pages/Chart.py")
 
 
