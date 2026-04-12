@@ -10,6 +10,7 @@ def simulate_round(num_players, max_price, strategy, base_cost=1.0, alpha=49.0):
     total_revenue = 0.0
 
     for i in range(num_players):
+        # choose price depending on strategy
         if strategy == 'random':
             price = random.randint(0, max_price)
 
@@ -23,10 +24,10 @@ def simulate_round(num_players, max_price, strategy, base_cost=1.0, alpha=49.0):
         else:
             raise ValueError(f"Unknown strategy: '{strategy}'")
 
-        tree.insert(f"P{i}", price)
+        tree.insert(f"P{i}", price) # add bid to tree
         total_revenue += compute_bid_cost(price, base_cost, alpha)
 
-    winner = tree.find_winner()
+    winner = tree.find_winner() # find lowest unique bid
     if winner:
         return winner.names[0], winner.bid, total_revenue
     return None, None, total_revenue
@@ -35,6 +36,7 @@ def simulate_round(num_players, max_price, strategy, base_cost=1.0, alpha=49.0):
 def run_simulation(num_rounds=500, num_players=20, max_price=50, base_cost=1.0, alpha=49.0):
 
     strategies = ['random', 'low_bias', 'mid_range']
+    # store stats for each strategy
     stats = {
         s: {'wins': 0, 'total_price': 0, 'total_revenue': 0.0, 'rounds_with_winner': 0}
         for s in strategies
@@ -51,7 +53,7 @@ def run_simulation(num_rounds=500, num_players=20, max_price=50, base_cost=1.0, 
                 stats[strategy]['total_price'] += winner_price
                 stats[strategy]['rounds_with_winner'] += 1
 
-    results = {}
+    results = {} # compute final results
     for s in strategies:
         won = stats[s]['rounds_with_winner']
         results[s] = {
