@@ -3,7 +3,6 @@ import os
 
 
 def load_bid(file):
-    """Load a CSV file and return a list of (player, price) tuples."""
     bid_list = []
     if not os.path.exists(file):
         print(f"[WARNING] File not found: {file}")
@@ -22,5 +21,4 @@ def load_bid(file):
 
 
 def compute_bid_cost(price, base_cost=1.0, alpha=49.0):
-    """Return the cost of placing a bid at a given price: base_cost + alpha / (price + 1)."""
     return base_cost + alpha / (price + 1)

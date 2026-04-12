@@ -23,7 +23,7 @@ memory = get_global_memory()
 st.sidebar.title("⚙️ Game Settings")
 current_view = st.sidebar.radio("Switch View:", ["👤 Player View", "🎛️ Host View"])
 
-# ── PLAYER VIEW ───────────────────────────────────────────────────────────────
+
 if current_view == "👤 Player View":
     st.title("Place Your Bid! 🎯")
 
@@ -79,7 +79,7 @@ if current_view == "👤 Player View":
         else:
             st.error("💀 You are bankrupt!")
 
-# ── HOST VIEW ─────────────────────────────────────────────────────────────────
+
 elif current_view == "🎛️ Host View":
     st.title("Host Dashboard 🎛️")
 

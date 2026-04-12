@@ -5,15 +5,7 @@ from loader import compute_bid_cost
 
 
 def simulate_round(num_players, max_price, strategy, base_cost=1.0, alpha=49.0):
-    """
-    Simulate one round and return (winner_name, winner_price, seller_revenue).
-    Returns (None, None, revenue) if no unique bid exists.
 
-    Strategies:
-      - 'random'    : uniform pick in [0, max_price]
-      - 'low_bias'  : exponential distribution skewed toward 0
-      - 'mid_range' : normal distribution centered at max_price // 2
-    """
     tree = Bid_tree()
     total_revenue = 0.0
 
@@ -41,10 +33,7 @@ def simulate_round(num_players, max_price, strategy, base_cost=1.0, alpha=49.0):
 
 
 def run_simulation(num_rounds=500, num_players=20, max_price=50, base_cost=1.0, alpha=49.0):
-    """
-    Run num_rounds rounds for each strategy independently.
-    Returns a dict: { strategy: { win_rate, avg_winning_price, avg_seller_revenue, rounds_with_winner } }
-    """
+
     strategies = ['random', 'low_bias', 'mid_range']
     stats = {
         s: {'wins': 0, 'total_price': 0, 'total_revenue': 0.0, 'rounds_with_winner': 0}
