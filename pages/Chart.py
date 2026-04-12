@@ -30,7 +30,6 @@ def cached_alpha_sweep(num_players, max_price, base_cost):
 
 st.title("📊 Stats & Strategy Analysis")
 
-# ── Sidebar controls ──────────────────────────────────────────────────────────
 st.sidebar.title("Simulation Settings")
 num_rounds  = st.sidebar.slider("Number of rounds",  100, 1000, 500, step=50)
 num_players = st.sidebar.slider("Players per round",   5,   50,  20)
@@ -40,7 +39,6 @@ alpha       = st.sidebar.number_input("Alpha (α)",   value=49.0, step=1.0)
 
 run_btn = st.sidebar.button("▶ Run Simulation", type="primary")
 
-# ── Risk premium preview ───────────────────────────────────────────────────────
 st.subheader("💰 Risk Premium Formula")
 st.latex(r"\text{cost}(p) = \text{base\_cost} + \frac{\alpha}{p + 1}")
 
@@ -56,7 +54,6 @@ st.altair_chart(cost_chart, use_container_width=True)
 
 st.divider()
 
-# ── Load a CSV for one-round analysis ─────────────────────────────────────────
 st.subheader("📂 Single-Round Analysis (from CSV)")
 
 csv_files = {
@@ -116,7 +113,6 @@ else:
 
 st.divider()
 
-# ── Multi-round simulation ─────────────────────────────────────────────────────
 st.subheader("🎲 Multi-Round Strategy Simulation")
 
 STRATEGY_LABELS = {
@@ -150,7 +146,6 @@ if results:
         })
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-    # Win rate bar chart
     wr_df = pd.DataFrame([
         {"Strategy": STRATEGY_LABELS.get(s, s), "Win Rate": r["win_rate"]}
         for s, r in results.items()
@@ -163,7 +158,6 @@ if results:
     ).properties(title="Win Rate by Strategy", height=280)
     st.altair_chart(wr_chart, use_container_width=True)
 
-    # Avg seller revenue bar chart
     rev_df = pd.DataFrame([
         {"Strategy": STRATEGY_LABELS.get(s, s), "Avg Seller Revenue": r["avg_seller_revenue"]}
         for s, r in results.items()
@@ -176,7 +170,6 @@ if results:
     ).properties(title="Average Seller Revenue by Strategy", height=280)
     st.altair_chart(rev_chart, use_container_width=True)
 
-    # Alpha sensitivity — cached, only recomputes when players/price/base_cost change
     st.subheader("📈 Effect of α on Seller Revenue")
     with st.spinner("Computing α sensitivity (cached after first run)…"):
         alpha_df = cached_alpha_sweep(num_players, max_price, base_cost)

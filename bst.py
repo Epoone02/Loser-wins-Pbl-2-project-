@@ -9,7 +9,7 @@ class BidNode:
         return self.right is None and self.left is None
 
 
-# Backward-compat alias
+
 Player = BidNode
 
 
@@ -102,13 +102,6 @@ class Bid_tree:
                 current = current.left
         return result
 
-
-    def _min_node(self, node):
-        current = node
-        while current.left is not None:
-            current = current.left
-        return current
-
     def _delete_recursive(self, node, bid):
         if node is None:
             return None
@@ -161,7 +154,6 @@ class Bid_tree:
             total_bids += len(node.names)
         return total_cost / total_bids if total_bids > 0 else 0.0
 
-    #tree fct
 
     def _depth_recursive(self, node):
         if node is None:
