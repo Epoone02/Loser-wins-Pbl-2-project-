@@ -4,19 +4,21 @@ import os
 import pandas as pd
 import altair as alt
 
+# setup project paths to access other files
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DATA_DIR = os.path.join(BASE_DIR, 'APP_lowbid_data')
 sys.path.append(BASE_DIR)
-from bst import Bid_tree
-from simulation import run_simulation
-from loader import load_bid, compute_bid_cost
+from bst import Bid_tree # import tree structure
+from simulation import run_simulation # import simulation logic
+from loader import load_bid, compute_bid_cost # import data loading + cost formula
 
 @st.cache_data(show_spinner=False)
 def cached_simulation(num_rounds, num_players, max_price, base_cost, alpha):
     return run_simulation(num_rounds, num_players, max_price, base_cost, alpha)
+# cache results to avoid recomputing simulation every time
 
 @st.cache_data(show_spinner=False)
-def cached_alpha_sweep(num_players, max_price, base_cost):
+def cached_alpha_sweep(num_players, max_price, base_cost): # test different alpha values to see impact on revenue
     """Pre-compute alpha sensitivity across [0..200] — cached so it only runs once per config."""
     rows = []
     STRATEGY_LABELS = {"random": "Random", "low_bias": "Low Bias", "mid_range": "Mid Range"}
@@ -30,10 +32,10 @@ def cached_alpha_sweep(num_players, max_price, base_cost):
             })
     return pd.DataFrame(rows)
 
-st.title("📊 Stats & Strategy Analysis")
+st.title("📊 Stats & Strategy Analysis") # main title of the app
 
 
-st.sidebar.title("Simulation Settings")
+st.sidebar.title("Simulation Settings") # sidebar = user inputs for simulation settings
 num_rounds  = st.sidebar.slider("Number of rounds",  100, 1000, 500, step=50)
 num_players = st.sidebar.slider("Players per round",   5,   50,  20)
 max_price   = st.sidebar.slider("Max bid price",      10,  200,  50)
@@ -43,10 +45,11 @@ alpha       = st.sidebar.number_input("Alpha (α)",   value=49.0, step=1.0)
 run_btn = st.sidebar.button("▶ Run Simulation", type="primary")
 
 st.subheader("💰 Risk Premium Formula")
-st.latex(r"\text{cost}(p) = \text{base\_cost} + \frac{\alpha}{p + 1}")
+st.latex(r"\text{cost}(p) = \text{base\_cost} + \frac{\alpha}{p + 1}") # display cost formula (risk premium)
 
+# compute and plot cost depending on price
 prices     = list(range(0, max_price + 1))
-costs      = [compute_bid_cost(p, base_cost, alpha) for p in prices]
+costs      = [compute_bid_cost(p, base_cost, alpha) for p in prices]# show how cost increases when price is low
 cost_df    = pd.DataFrame({"Price": prices, "Ticket Cost ($)": costs})
 cost_chart = alt.Chart(cost_df).mark_line(color="#f97316").encode(
     x=alt.X("Price:Q", title="Bid Price"),
@@ -67,25 +70,25 @@ csv_files = {
 selected_csv = st.selectbox("Choose a dataset", list(csv_files.keys()))
 csv_path = csv_files[selected_csv]
 
-if os.path.exists(csv_path):
+if os.path.exists(csv_path): # load CSV data and build tree
     bids = load_bid(csv_path)
     tree = Bid_tree()
-    tree.build_tree(bids)
+    tree.build_tree(bids) # store bids in BST for fast search and sorting
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Bids",      tree.total_bids())
-    col2.metric("Seller Revenue",  f"${tree.seller_revenue(base_cost, alpha):.2f}")
-    col3.metric("Avg Cost / Bid",  f"${tree.average_cost_per_player(base_cost, alpha):.2f}")
+    col1.metric("Total Bids",      tree.total_bids()) # total number of bids
+    col2.metric("Seller Revenue",  f"${tree.seller_revenue(base_cost, alpha):.2f}") # total money earned
+    col3.metric("Avg Cost / Bid",  f"${tree.average_cost_per_player(base_cost, alpha):.2f}") # average cost
 
-    winner = tree.find_winner()
+    winner = tree.find_winner() # find the winner (lowest unique bid)
     if winner:
-        st.success(f"🏆 Winner: **{winner.names[0]}** with price **{winner.bid}**")
+        st.success(f"🏆 Winner: **{winner.names[0]}** with price **{winner.bid}**") # winner = lowest price used by only one player
     else:
         st.warning("No winner — every price was proposed by more than one player.")
 
     # Price distribution chart
-    dist = tree.price_distribution()
-    dist_df = pd.DataFrame({"Price": list(dist.keys()), "Count": list(dist.values())})
+    dist = tree.price_distribution() # create price distribution chart
+    dist_df = pd.DataFrame({"Price": list(dist.keys()), "Count": list(dist.values())}) # shows how many players chose each price
     dist_chart = alt.Chart(dist_df).mark_bar().encode(
         x=alt.X("Price:Q",  title="Bid Price"),
         y=alt.Y("Count:Q",  title="Number of Players"),
@@ -100,15 +103,15 @@ if os.path.exists(csv_path):
 
     # BST tools
     with st.expander("🔍 BST Search Tools"):
-        search_val = st.number_input("Search for a price", min_value=0, value=0, step=1, key="search")
+        search_val = st.number_input("Search for a price", min_value=0, value=0, step=1, key="search") # find a price in the tree
         node = tree.search(int(search_val))
         if node:
             st.write(f"Found: **{node.bid}** → {node.names} ({'unique' if len(node.names)==1 else 'duplicate'})")
         else:
             st.write("Price not found in tree.")
 
-        succ = tree.successor(int(search_val))
-        pred = tree.predecessor(int(search_val))
+        succ = tree.successor(int(search_val)) # next higher price
+        pred = tree.predecessor(int(search_val)) # next lower price
         st.write(f"**Successor** of {search_val}: {succ.bid if succ else 'none'}")
         st.write(f"**Predecessor** of {search_val}: {pred.bid if pred else 'none'}")
 else:
@@ -124,13 +127,13 @@ STRATEGY_LABELS = {
     "mid_range": "🎯 Mid Range",
 }
 
-if run_btn or "sim_results" not in st.session_state:
+if run_btn or "sim_results" not in st.session_state: # run multi-round simulation
     with st.spinner(f"Running {num_rounds} rounds…"):
         st.session_state["sim_results"] = cached_simulation(
             num_rounds, num_players, max_price, base_cost, alpha
         )
 
-results = st.session_state["sim_results"]
+results = st.session_state["sim_results"] # simulate many games to compare strategies
 
 rows = []
 for s, r in results.items():
@@ -145,9 +148,9 @@ st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
 col_a, col_b = st.columns(2)
 
-with col_a:
+with col_a: # display win rate and revenue for each strategy
     wr_df = pd.DataFrame([
-        {"Strategy": STRATEGY_LABELS.get(s, s), "Win Rate": r["win_rate"]}
+        {"Strategy": STRATEGY_LABELS.get(s, s), "Win Rate": r["win_rate"]} # percentage of wins
         for s, r in results.items()
     ])
     wr_chart = alt.Chart(wr_df).mark_bar().encode(
@@ -160,7 +163,7 @@ with col_a:
 
 with col_b:
     rev_df = pd.DataFrame([
-        {"Strategy": STRATEGY_LABELS.get(s, s), "Avg Seller Revenue": r["avg_seller_revenue"]}
+        {"Strategy": STRATEGY_LABELS.get(s, s), "Avg Seller Revenue": r["avg_seller_revenue"]} # average money earned
         for s, r in results.items()
     ])
     rev_chart = alt.Chart(rev_df).mark_bar().encode(
@@ -180,7 +183,8 @@ st.caption(
 
 st.subheader("📈 Effect of α on Seller Revenue")
 with st.spinner("Computing α sensitivity (cached after first run)…"):
-    alpha_df = cached_alpha_sweep(num_players, max_price, base_cost)
+   # analyze effect of alpha on seller revenue
+    alpha_df = cached_alpha_sweep(num_players, max_price, base_cost) # shows how risk parameter changes the game
 
 alpha_chart = alt.Chart(alpha_df).mark_line(point=True).encode(
     x=alt.X("Alpha:Q",              title="α (risk premium intensity)"),
