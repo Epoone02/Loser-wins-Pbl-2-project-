@@ -3,30 +3,32 @@ import sys
 import os
 import random
 
+# setup project path to import other files
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(BASE_DIR)
-from bst import Bid_tree
-from loader import compute_bid_cost
+from bst import Bid_tree # tree structure to store bids
+from loader import compute_bid_cost # function to calculate bid cost
 
 
 @st.cache_resource
 def get_global_memory():
     return {
-        "bids": [],
-        "bank": {},
+        "bids": [], # store all bids
+        "bank": {}, # store player money
         "base_cost": 1.0,
         "alpha": 49.0,
         "max_price": 99,
         "num_bots": 10,
     }
-
+# keep data persistent during the app
 def get_wins():
     return []
 
 memory = get_global_memory()
 wins = get_wins()
 
-st.sidebar.title("⚙️ Game Settings")
+st.sidebar.title("⚙️ Game Settings") 
+# sidebar to choose between player and host
 current_view = st.sidebar.radio("Switch View:", ["👤 Player View", "🎛️ Host View"])
 
 
@@ -40,8 +42,8 @@ if current_view == "👤 Player View":
     player_name = st.text_input("Enter your Username:")
 
     if player_name:
-        if player_name not in memory["bank"]:
-            memory['bank'][player_name] = 100.0
+        if player_name not in memory["bank"]: 
+            memory['bank'][player_name] = 100.0 # give initial money
 
         current_balance = memory['bank'][player_name]
         st.info(f"**Current Balance:** ${current_balance:.2f}")
@@ -53,7 +55,7 @@ if current_view == "👤 Player View":
                 min_value=0, max_value=max(max_bid, 1), value=0, step=1
             )
 
-            bid_cost = compute_bid_cost(proposed_price, base_cost, alpha)
+            bid_cost = compute_bid_cost(proposed_price, base_cost, alpha) # calculate how much the bid costs
             st.write(f"**Cost of this ticket:** ${bid_cost:.2f}")
 
             # Show successor/predecessor hint
@@ -61,6 +63,7 @@ if current_view == "👤 Player View":
             for b in memory['bids']:
                 existing_tree.insert(b['name'], b['price'])
 
+            # show closest prices already used
             succ = existing_tree.successor(proposed_price)
             pred = existing_tree.predecessor(proposed_price)
             if succ or pred:
@@ -74,22 +77,23 @@ if current_view == "👤 Player View":
             if bid_cost > current_balance:
                 st.error("You don't have enough money to pay the ticket cost!")
             else:
-                if st.button("Submit Bid"):
+                if st.button("Submit Bid"): # submit bid if player has enough money
                     memory['bank'][player_name] -= bid_cost
                     memory['bids'].append({
                         "name": player_name,
                         "price": proposed_price,
                         "cost": bid_cost
                     })
+                    # save the bid
                     st.success(f"Bid of **{proposed_price}** placed! Remaining balance: ${memory['bank'][player_name]:.2f}")
         else:
-            st.error("You are bankrupt!")
+            st.error("You are bankrupt!") # player has no money
 
 
 elif current_view == "🎛️ Host View":
     st.title("Host Dashboard 🎛️")
 
-    with st.expander("⚙️ Configure Game Rules", expanded=False):
+    with st.expander("⚙️ Configure Game Rules", expanded=False): # change game parameters
         memory['base_cost']  = st.number_input("Base Cost",          min_value=0.0,  value=memory['base_cost'],  step=0.5)
         memory['alpha']      = st.number_input("Alpha Parameter (α)", min_value=0.0, value=memory['alpha'],      step=1.0)
         memory['max_price']  = st.number_input("Max Bid Price",       min_value=1,   value=memory['max_price'],  step=1)
@@ -101,7 +105,7 @@ elif current_view == "🎛️ Host View":
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Add Bot Bids", help="Bots play with random strategy"):
+        if st.button("Add Bot Bids", help="Bots play with random strategy"): # add bot players with random strategies
             base_cost = memory['base_cost']
             alpha     = memory['alpha']
             max_price = memory['max_price']
@@ -126,23 +130,23 @@ elif current_view == "🎛️ Host View":
             st.rerun()
 
     with col2:
-        if st.button("Clear All Bids"):
+        if st.button("Clear All Bids"): # bots simulate different strategies
             memory['bids'] = []
             st.rerun()
 
     st.divider()
 
     if len(memory['bids']) > 0:
-        if st.button("Resolve Round", type="primary"):
+        if st.button("Resolve Round", type="primary"): # resolve the round (find winner)
             tree              = Bid_tree()
             total_seller_rev  = 0.0
 
-            for bid in memory['bids']:
+            for bid in memory['bids']: # build tree and calculate revenue
                 tree.insert(bid["name"], bid["price"])
                 total_seller_rev += bid["cost"]
 
             sorted_nodes = tree.get_inorder_nodes()
-            winner       = tree.find_winner()
+            winner       = tree.find_winner() # find lowest unique bid
 
             st.subheader("Bid Results (Ascending Order)")
             for node in sorted_nodes:
