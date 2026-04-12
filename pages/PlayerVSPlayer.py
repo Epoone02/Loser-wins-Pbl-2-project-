@@ -3,9 +3,11 @@ import sys
 import os
 import random
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(BASE_DIR)
 from bst import Bid_tree
 from loader import compute_bid_cost
+
 
 @st.cache_resource
 def get_global_memory():

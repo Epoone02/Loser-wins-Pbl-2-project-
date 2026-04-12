@@ -9,12 +9,26 @@ def load_bid(file):
         return bid_list
     with open(file, 'r') as csvfile:
         reader = csv.reader(csvfile)
-        next(reader, None)  # skip header
+        header = next(reader, None)
+        if header is None:
+            return bid_list
+
+        # Detect column layout from header names
+        header_lower = [h.strip().lower() for h in header]
+        if 'manche' in header_lower:
+            # 3-column format: manche, joueur, prix
+            idx_player = header_lower.index('joueur')
+            idx_price  = header_lower.index('prix')
+        else:
+            # 2-column format: joueur, prix (fallback: col 0 and 1)
+            idx_player = 0
+            idx_price  = 1
+
         for row in reader:
-            if len(row) >= 2:
+            if len(row) > max(idx_player, idx_price):
                 try:
-                    int(row[1])
-                    bid_list.append((row[0], row[1]))
+                    int(row[idx_price])
+                    bid_list.append((row[idx_player], row[idx_price]))
                 except ValueError:
                     pass
     return bid_list
