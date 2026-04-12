@@ -29,7 +29,7 @@ current_view = st.sidebar.radio("Switch View:", ["👤 Player View", "🎛️ Ho
 
 
 if current_view == "👤 Player View":
-    st.title("Place Your Bid! 🎯")
+    st.title("Place Your Bid!")
 
     base_cost  = memory['base_cost']
     alpha      = memory['alpha']
@@ -42,7 +42,7 @@ if current_view == "👤 Player View":
             memory['bank'][player_name] = 100.0
 
         current_balance = memory['bank'][player_name]
-        st.info(f"💰 **Current Balance:** ${current_balance:.2f}")
+        st.info(f"**Current Balance:** ${current_balance:.2f}")
 
         if current_balance > 0:
             max_bid = min(int(current_balance), max_price)
@@ -52,7 +52,7 @@ if current_view == "👤 Player View":
             )
 
             bid_cost = compute_bid_cost(proposed_price, base_cost, alpha)
-            st.write(f"🎟️ **Cost of this ticket:** ${bid_cost:.2f}")
+            st.write(f"**Cost of this ticket:** ${bid_cost:.2f}")
 
             # Show successor/predecessor hint
             existing_tree = Bid_tree()
@@ -64,15 +64,15 @@ if current_view == "👤 Player View":
             if succ or pred:
                 hints = []
                 if pred:
-                    hints.append(f"⬇️ Closest lower bid already placed: **{pred.bid}**")
+                    hints.append(f"Closest lower bid already placed: **{pred.bid}**")
                 if succ:
-                    hints.append(f"⬆️ Closest higher bid already placed: **{succ.bid}**")
+                    hints.append(f"Closest higher bid already placed: **{succ.bid}**")
                 st.caption(" | ".join(hints))
 
             if bid_cost > current_balance:
-                st.error("❌ You don't have enough money to pay the ticket cost!")
+                st.error("You don't have enough money to pay the ticket cost!")
             else:
-                if st.button("✅ Submit Bid"):
+                if st.button("Submit Bid"):
                     memory['bank'][player_name] -= bid_cost
                     memory['bids'].append({
                         "name": player_name,
@@ -81,7 +81,7 @@ if current_view == "👤 Player View":
                     })
                     st.success(f"Bid of **{proposed_price}** placed! Remaining balance: ${memory['bank'][player_name]:.2f}")
         else:
-            st.error("💀 You are bankrupt!")
+            st.error("You are bankrupt!")
 
 
 elif current_view == "🎛️ Host View":
@@ -99,7 +99,7 @@ elif current_view == "🎛️ Host View":
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("🤖 Add Bot Bids", help="Bots play with random strategy"):
+        if st.button("Add Bot Bids", help="Bots play with random strategy"):
             base_cost = memory['base_cost']
             alpha     = memory['alpha']
             max_price = memory['max_price']
@@ -124,14 +124,14 @@ elif current_view == "🎛️ Host View":
             st.rerun()
 
     with col2:
-        if st.button("🗑️ Clear All Bids"):
+        if st.button("Clear All Bids"):
             memory['bids'] = []
             st.rerun()
 
     st.divider()
 
     if len(memory['bids']) > 0:
-        if st.button("🏁 Resolve Round", type="primary"):
+        if st.button("Resolve Round", type="primary"):
             tree              = Bid_tree()
             total_seller_rev  = 0.0
 
@@ -142,10 +142,10 @@ elif current_view == "🎛️ Host View":
             sorted_nodes = tree.get_inorder_nodes()
             winner       = tree.find_winner()
 
-            st.subheader("📋 Bid Results (Ascending Order)")
+            st.subheader("Bid Results (Ascending Order)")
             for node in sorted_nodes:
                 num_players = len(node.names)
-                status      = "✅ UNIQUE" if num_players == 1 else "❌ DUPLICATE"
+                status      = "UNIQUE" if num_players == 1 else "DUPLICATE"
                 st.write(f"- Price **{node.bid}** — {num_players} player(s) ({', '.join(node.names)}) → {status}")
 
                 # Show successor for non-unique bids (next candidate to check)
@@ -155,15 +155,15 @@ elif current_view == "🎛️ Host View":
                         st.caption(f"  ↳ Next candidate price (successor): **{succ.bid}**")
 
             st.divider()
-            st.subheader("🏆 Final Result")
+            st.subheader("Final Result")
 
             if winner:
                 wins.append(node.bid)
                 st.balloons()
                 st.success(f"The winner is **{winner.names[0]}** with the unique price of **{winner.bid}**!")
             else:
-                st.warning("⚠️ No winner! Every price was proposed at least twice.")
+                st.warning("No winner! Every price was proposed at least twice.")
 
-            st.metric(label="💵 Seller Revenue", value=f"${total_seller_rev:.2f}")
+            st.metric(label="Seller Revenue", value=f"${total_seller_rev:.2f}")
     else:
-        st.info("⏳ Waiting for players to place bids…")
+        st.info("Waiting for players to place bids…")
