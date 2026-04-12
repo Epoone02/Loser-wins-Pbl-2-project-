@@ -68,7 +68,7 @@ if current_view == "👤 Player View":
                 if succ:
                     hints.append(f"⬆️ Closest higher bid already placed: **{succ.bid}**")
                 st.caption(" | ".join(hints))
-
+            
             if bid_cost > current_balance:
                 st.error("❌ You don't have enough money to pay the ticket cost!")
             else:
@@ -148,7 +148,6 @@ elif current_view == "🎛️ Host View":
                 status      = "✅ UNIQUE" if num_players == 1 else "❌ DUPLICATE"
                 st.write(f"- Price **{node.bid}** — {num_players} player(s) ({', '.join(node.names)}) → {status}")
 
-                # Show successor for non-unique bids (next candidate to check)
                 if num_players > 1:
                     succ = tree.successor(node.bid)
                     if succ:

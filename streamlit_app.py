@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Abracadabra - LowBid", page_icon="🔨", layout="centered")
+st.set_page_config(page_title="Winabid - LowBid", page_icon="🔨", layout="centered")
 
 st.title("Welcome to Winabid")
 st.subheader("The Lowest Unique Bid Wins!")
