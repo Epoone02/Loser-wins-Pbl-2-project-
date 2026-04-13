@@ -29,12 +29,12 @@ lowbid/
 
 ## Installation
 
-Our code interface works with Streamlite, so you may need to install it if you haven't already.
+Our code interface works with Streamlit, so you may need to install it if you haven't already.
 
 ```bash
 pip install streamlit pandas altair
 ```
-if needed here is the upgrade command for Streamlite
+if needed here is the upgrade command for Streamlit
 
 ```bash
 pip install --upgrade streamlit
